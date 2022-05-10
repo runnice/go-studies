@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt" // pacote printa na tela e formata
+	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -13,6 +16,7 @@ const delay = 5
 func main() {
 
 	exibeIntroducao()
+	leSitesdoArquivo()
 	for {
 		exibeMenu()
 
@@ -99,8 +103,11 @@ func iniciarMonitoramento() {
 
 }
 func testaSite(site string) {
-	resp, _ := http.Get(site)
+	resp, err := http.Get(site)
 	// fmt.Println(resp)
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+	}
 	if resp.StatusCode == 200 {
 		fmt.Println("Site", site, "foi carregado com sucesso!")
 	} else {
@@ -112,9 +119,29 @@ func testaSite(site string) {
 func leSitesdoArquivo() []string {
 	var sites []string
 
-	arquivo, _ := os.Open("sites.txt")
-	fmt.Println(arquivo)
+	// arquivo, err := ioutil.ReadFile("sites.txt") //imprimir todo arquivo
+	// fmt.Println(string(arquivo)) //usando ioutil
+
+	arquivo, err := os.Open("sites.txt")
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+
+	}
 	fmt.Println("Arquivo aberto com sucesso!")
+	leitor := bufio.NewReader(arquivo)
+
+	for {
+		linha, err := leitor.ReadString('\n')
+		linha = strings.TrimSpace(linha)
+		sites = append(sites, linha)
+		if err == io.EOF {
+			break
+		}
+
+	}
+
+	fmt.Println(sites)
+	fmt.Println(len(sites))
 
 	return sites
 }
