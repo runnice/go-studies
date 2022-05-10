@@ -109,6 +109,16 @@ func testaSite(site string) {
 
 }
 
+func leSitesdoArquivo() []string {
+	var sites []string
+
+	arquivo, _ := os.Open("sites.txt")
+	fmt.Println(arquivo)
+	fmt.Println("Arquivo aberto com sucesso!")
+
+	return sites
+}
+
 //Uso de Slice
 // func exibeNomes(){
 // 	nomes:= []string{"Douglas", "Daniel", "Bernardo"}
