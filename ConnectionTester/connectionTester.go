@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -17,6 +18,7 @@ func main() {
 
 	exibeIntroducao()
 	leSitesdoArquivo()
+	registraLog("site-falso", false)
 	for {
 		exibeMenu()
 
@@ -110,8 +112,10 @@ func testaSite(site string) {
 	}
 	if resp.StatusCode == 200 {
 		fmt.Println("Site", site, "foi carregado com sucesso!")
+		registraLog(site, true)
 	} else {
 		fmt.Println("Site", site, "está com problemas. StatusCode:", resp.StatusCode)
+		registraLog(site, false)
 	}
 
 }
@@ -122,7 +126,7 @@ func leSitesdoArquivo() []string {
 	// arquivo, err := ioutil.ReadFile("sites.txt") //imprimir todo arquivo
 	// fmt.Println(string(arquivo)) //usando ioutil
 
-	arquivo, err := os.Open("sites.txt")
+	arquivo, err := os.Open("sites.txt") //abre o arquivo
 	if err != nil {
 		fmt.Println("Ocorreu um erro:", err)
 
@@ -142,8 +146,18 @@ func leSitesdoArquivo() []string {
 
 	fmt.Println(sites)
 	fmt.Println(len(sites))
+	arquivo.Close() //fecha o arquivo
 
 	return sites
+}
+
+func registraLog(site string, status bool) {
+	arquivo, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Println(err)
+	}
+	arquivo.WriteString(site + " - online: " + strconv.FormatBool(status) + "\n")
+	arquivo.Close()
 }
 
 //Uso de Slice
@@ -165,4 +179,4 @@ func leSitesdoArquivo() []string {
 // 	nome := "Runas"
 // 	idade := 34
 // 	return nome, idade
-// }
+//}
